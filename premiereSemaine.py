@@ -1,15 +1,22 @@
-
-
-def main():
-    firstDay = []
+def list_from_text(name_of_file):
+    output = []
     with open('day1input.txt') as f:
         for line in f:
-            firstDay.extend([int(x) for x in line.split()])
+            output.extend([int(x) for x in line.split()])
+    return output
 
+def sliding_comparer(list_like):
+    return  sum([1 for previous, current in zip(list_like, list_like[1:]) if current>previous])
+
+def main():
+    firstDay = list_from_text("day1input.txt")
     print(firstDay)
 
-    count = sum([1 for previous, current in zip(firstDay, firstDay[1:]) if current>previous])
+    count = sliding_comparer(firstDay)
     print(count)
 
+    sliding_window = [sum([a,b,c]) for a,b,c in zip(firstDay,firstDay[1:],firstDay[2:])]
+    new_count = sliding_comparer(sliding_window)
+    print(new_count)
 if __name__=="__main__":
     main()
