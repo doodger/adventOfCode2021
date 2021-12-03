@@ -20,7 +20,7 @@ def tuple_list_from_text(name_of_file):
             output.append(tuple(inter))
     return output
 
-def generate_direction(direction_tuple):
+def generate_direction_part_one(direction_tuple):
     direction = direction_tuple[0]
     strength = direction_tuple[1]
 
@@ -32,6 +32,20 @@ def generate_direction(direction_tuple):
         output = (0, strength)
     else:
         output = (0,0)
+    return output
+
+def generate_direction_part_two(direction_tuple,current_aim):
+    direction = direction_tuple[0]
+    strength = direction_tuple[1]
+
+    if direction=="forward":
+        output = (strength,current_aim*strength,current_aim)
+    elif direction=="up":
+        output = (0,0,current_aim-strength)
+    elif direction == "down":
+        output = (0, 0,current_aim+strength)
+    else:
+        output = (0,0,current_aim)
     return output
 
 
@@ -50,14 +64,24 @@ def firstDay():
     new_count = sliding_comparer(sliding_window)
     print(new_count)
 
-def main():
+def secondDay():
     travel = [0,0]
-    test = tuple_list_from_text("src/day2input.txt")
-    for tup in test:
-        dir = generate_direction(tup)
+    input = tuple_list_from_text("src/day2input.txt")
+    for tup in input:
+        dir = generate_direction_part_one(tup)
         travel[0] += dir[0]
         travel[1] += dir[1]
 
-    print(travel)
+    travel = [0,0,0]
+    for tup in input:
+        dir = generate_direction_part_two(tup,travel[2])
+        travel[0] += dir[0]
+        travel[1] += dir[1]
+        travel[2] = dir[2]
+    print(travel[0]*travel[1])
+
+
+def main():
+    print("oh oh oh!")
 if __name__ == "__main__":
     main()

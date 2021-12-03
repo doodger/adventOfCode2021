@@ -1,6 +1,6 @@
 import unittest
 import pytest
-from src.premiereSemaine import sliding_comparer,tuple_list_from_text,generate_direction
+from src.premiereSemaine import sliding_comparer,tuple_list_from_text,generate_direction_part_one,generate_direction_part_two
 from parameterized import parameterized
 import os
 
@@ -39,10 +39,25 @@ def test_tuple_list_from_text(day_two_file):
         (("up",1),(0,-1)),
     ]
 )
-def test_reading_directions(test_input, expected):
-    test_case = ("forward",1)
+def test_reading_directions_part_one(test_input, expected):
 
-    assert generate_direction(test_input)==expected
+    assert generate_direction_part_two(test_input)==expected
+
+@pytest.mark.parametrize(
+    "test_input, expected",
+    [
+        ((("forward",5),0),(5,0,0)),
+        ((("forward",5),1),(5,5,1)),
+        ((("down",5),5),(0,0,10)),
+        ((("up",10),5),(0,0,-5)),
+        ((("forward",10),-5), (10,-50,-5))
+    ]
+)
+def test_reading_directions_part_two(test_input, expected):
+
+    assert generate_direction_part_two(test_input[0],test_input[1]) == expected
+
+
 
 
 # #using parameterized to test it
