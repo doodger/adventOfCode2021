@@ -7,8 +7,8 @@ def int_list_from_text(name_of_file):
 
 
 def sliding_comparer(list_like):
-    return sum(
-        [1 for previous, current in zip(list_like, list_like[1:]) if current > previous]
+    return len( # Idée d'un collègue; plus rapide
+        [None for previous, current in zip(list_like, list_like[1:]) if current > previous]
     )
 
 def tuple_list_from_text(name_of_file):
