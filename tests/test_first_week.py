@@ -5,6 +5,10 @@ from src.premiereSemaine import (
     tuple_list_from_text,
     generate_direction_part_one,
     generate_direction_part_two,
+    accumulate_binary,
+    gamma_to_epsilon,
+    list_of_bit_to_int,
+    day_3_io
 )
 from parameterized import parameterized
 import os
@@ -68,3 +72,55 @@ def test_reading_directions_part_one(test_input, expected):
 def test_reading_directions_part_two(test_input, expected):
 
     assert generate_direction_part_two(test_input[0], test_input[1]) == expected
+
+
+
+@pytest.mark.parametrize(
+    "test_input, expected",
+    [
+        ([[1,1,0],[1,0,1],[0,0,0]],([1,0,0])),
+        ([[1, 1, 0], [1, 0, 1], [0, 0, 1],[0,0,1]], ([0, 0, 1])),
+
+
+    ],
+)
+def test_accumulating_binary(test_input, expected):
+
+    assert accumulate_binary(test_input) == expected
+
+@pytest.mark.parametrize(
+    "test_input, expected",
+    [
+        ([0,0,0,0],([1,1,1,1])),
+        ([1, 1, 0, 0], ([0, 0, 1, 1])),
+        ([1,0,1,1,0],[0,1,0,0,1])
+
+    ],
+)
+def test_gamma_to_epsilon(test_input, expected):
+
+    assert gamma_to_epsilon(test_input) == expected
+
+
+@pytest.mark.parametrize(
+    "test_input, expected",
+    [
+        ([1,0],(2)),
+        ([1, 0,1,1, 0], (22)),
+        ([0,1,0,0,1],9)
+
+    ],
+)
+def test_list_of_bit_to_int(test_input,expected):
+    assert list_of_bit_to_int(test_input)==expected
+
+def test_day_three_part_one_integration():
+    #tests if the proper gamma rate is obtained
+    arr = day_3_io("../src/day3test.txt")
+
+
+    total = accumulate_binary(arr)
+    gamma = total
+    epsilon = gamma_to_epsilon(total)
+
+    assert (list_of_bit_to_int(gamma)*list_of_bit_to_int(epsilon) == 198)

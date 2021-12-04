@@ -48,6 +48,28 @@ def generate_direction_part_two(direction_tuple,current_aim):
         output = (0,0,current_aim)
     return output
 
+def accumulate_binary(array_of_array):
+    ratio = len(array_of_array)//2
+    return list(map(lambda x: 1 if x>ratio else 0 ,list(map(sum,zip(*array_of_array)))))
+
+def gamma_to_epsilon(list_of_bits):
+    test = list(map( lambda x: 1 if x==0 else 0 , list_of_bits))
+    return test
+
+def list_of_bit_to_int(list_of_bits):
+    out = 0
+    for bit in list_of_bits:
+        out = (out << 1) | bit
+    return out
+
+def day_3_io(path):
+    arr = []
+    with open(path) as f:
+        for line in f:
+            if line[-1] == '\n':
+                line = line[:-1]
+            arr.append([int(i) for i in list(line)])
+    return(arr)
 
 def firstDay():
     # puzzles of the first day: finding how many entries in a list are bigger than the previous one,
@@ -81,7 +103,13 @@ def secondDay():
     print(travel[0]*travel[1])
 
 
+def third_day():
+    gamma = accumulate_binary( day_3_io("src/day3input.txt") )
+    epsilon = gamma_to_epsilon(gamma)
+    print(list_of_bit_to_int(gamma)*list_of_bit_to_int(epsilon))
+
 def main():
     print("oh oh oh!")
+    third_day()
 if __name__ == "__main__":
     main()
