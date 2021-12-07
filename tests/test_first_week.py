@@ -12,7 +12,9 @@ from src.premiereSemaine import (
     validate_card,
     oxygen_rate,
     accumulate_binary_oxygen,
-    carbon_rate
+    carbon_rate,
+    bingo_cards_from_text,
+    bingo_new_number
 )
 from parameterized import parameterized
 import os
@@ -133,18 +135,15 @@ def test_day_three_part_one_integration():
 def test_oxygen_rate(test_input, expected):
     assert oxygen_rate(test_input) == expected
 
+
 def test_day_three_part_two_integration():
     # tests if the proper gamma rate is obtained
     arr = day_3_io("../src/day3test.txt")
 
-
     oxygen = list_of_bit_to_int(oxygen_rate(arr))
     carbon = list_of_bit_to_int(carbon_rate(arr))
 
-
-    assert (oxygen == 23) & (carbon == 10 )
-
-
+    assert (oxygen == 23) & (carbon == 10)
 
 
 @pytest.mark.parametrize(
@@ -160,15 +159,15 @@ def test_day_three_part_two_integration():
         ),
         (
             [
-                [1, 0, 0],
-                [0, 0, 1],
-                [0, 1, 0],
+                [-1, 0, 0],
+                [0, 0, -1],
+                [0, -1, 0],
             ],
             False,
         ),
         (
             [
-                [1, 1, 1],
+                [-1, -1, -1],
                 [0, 0, 0],
                 [0, 0, 0],
             ],
@@ -176,19 +175,43 @@ def test_day_three_part_two_integration():
         ),
         (
             [
-                [1, 0, 0],
-                [1, 0, 0],
-                [1, 0, 0],
+                [-1, 0, 0],
+                [-1, 0, 0],
+                [-1, 0, 0],
             ],
             True,
         ),
         (
             [
-                [1, 0, 0],
-                [0, 1, 0],
-                [0, 0, 1],
+                [-1, 0, 0],
+                [0, -1, 0],
+                [0, 0, -1],
             ],
             True,
+        ),
+        (
+            [
+                [0, 0, -1],
+                [0, -1, 0],
+                [-1, 0, 0],
+            ],
+            True,
+        ),
+        (
+            [
+                [0, 0, -1],
+                [0, 10, 0],
+                [-1, 0, 0],
+            ],
+            False,
+        ),
+        (
+            [
+                [0, 3, 0],
+                [5, 10, 2],
+                [-1, 0, 0],
+            ],
+            False,
         ),
     ],
 )
@@ -215,7 +238,7 @@ def test_day_four_validate_grids(test_input, expected):
                 [78, 36, 24],
             ],
             11,
-            (2, 1),
+            (1, 2),
         ),
         (
             [
@@ -229,4 +252,180 @@ def test_day_four_validate_grids(test_input, expected):
     ],
 )
 def test_day_four_check_new_number(i_card, i_number, expected):
-    assert validate_card(i_card, i_number) == expected
+    assert bingo_new_number(i_card, i_number) == expected
+
+
+@pytest.mark.parametrize(
+    "i_path, array_of_number,array_of_cards",
+    [
+        [
+        "../src/day4test.txt",
+        [
+            7,
+            4,
+            9,
+            5,
+            11,
+            17,
+            23,
+            2,
+            0,
+            14,
+            21,
+            24,
+            10,
+            16,
+            13,
+            6,
+            15,
+            25,
+            12,
+            22,
+            18,
+            20,
+            8,
+            19,
+            3,
+            26,
+            1,
+        ],
+        [
+        [
+            [22, 13, 17, 11, 0],
+            [8, 2, 23, 4, 24],
+            [21, 9, 14, 16, 7],
+            [
+                6,
+                10,
+                3,
+                18,
+                5,
+            ],
+            [
+                1,
+                12,
+                20,
+                15,
+                19,
+            ],
+        ],
+        [
+            [
+                3,
+                15,
+                0,
+                2,
+                22,
+            ],
+            [
+                9,
+                18,
+                13,
+                17,
+                5,
+            ],
+            [
+                19,
+                8,
+                7,
+                25,
+                23,
+            ],
+            [
+                20,
+                11,
+                10,
+                24,
+                4,
+            ],
+            [
+                14,
+                21,
+                16,
+                12,
+                6,
+            ],
+        ],
+        [
+            [
+                14,
+                21,
+                17,
+                24,
+                4,
+            ],
+            [
+                10,
+                16,
+                15,
+                9,
+                19,
+            ],
+            [
+                18,
+                8,
+                23,
+                26,
+                20,
+            ],
+            [
+                22,
+                11,
+                13,
+                6,
+                5,
+            ],
+            [
+                2,
+                0,
+                12,
+                3,
+                7,
+            ],
+        ]]
+    ]]
+)
+def test_day_four_IO(i_path, array_of_number, array_of_cards):
+    a = i_path
+    b = array_of_number
+    c = array_of_cards
+    assert bingo_cards_from_text(i_path) == (array_of_number,array_of_cards)
+
+
+def test_integration_day_four_one(i_path = "../src/day4test.txt",):
+    numbers, cards = bingo_cards_from_text(i_path)
+    complete = False
+    for number in numbers:
+        if not complete:
+            for no,card in enumerate(cards):
+                c_x,c_y = bingo_new_number(card,number)
+                if c_x != -1:
+                    card[c_x][c_y] = -1
+                if validate_card(card):
+                    winner = no
+                    final_number = number
+                    complete = True
+                    break
+
+
+    total = sum([entry for row in cards[winner] for entry in row if entry!=-1])
+    assert final_number*total == 4512
+
+def test_integration_day_four_one(i_path="../src/day4test.txt", ):
+    numbers, cards = bingo_cards_from_text(i_path)
+    for number in numbers:
+        new_cards = []
+        for no, card in enumerate(cards):
+            c_x, c_y = bingo_new_number(card, number)
+            if c_x != -1:
+                card[c_x][c_y] = -1
+            if not validate_card(card):
+                new_cards.append(card)
+        if(len(new_cards)==0):
+            winning_card = cards[0]
+            final_number = number
+            break
+        cards = new_cards
+
+    total = sum([entry for row in winning_card for entry in row if entry != -1])
+    assert total*final_number == 1924

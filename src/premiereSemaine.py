@@ -25,6 +25,25 @@ def tuple_list_from_text(name_of_file):
             output.append(tuple(inter))
     return output
 
+def bingo_cards_from_text(name_of_file):
+    rest = []
+    cards = []
+    with open(name_of_file) as f:
+        first_line = f.readline()
+
+        rest = [line.strip() for line in f]
+
+    numbers =  [int(entry) for entry in first_line.split(',') ]
+    for i in range(len(rest)//6):
+        current = rest[(6*i + 1):(6*(i+1))]
+        card = []
+        for line in current:
+            #card.append(line)
+            card.append([int(entry) for entry in line.split()])
+
+        cards.append(card)
+    return (numbers,cards)
+
 
 def generate_direction_part_one(direction_tuple):
     direction = direction_tuple[0]
@@ -90,28 +109,34 @@ def day_3_io(path):
     return arr
 
 
-def validate_card(i_card, i_number):
+def validate_card(i_card):
     # check horizontal
     for row in i_card:
-        if all(row):
+        if all(x ==-1 for x in row):
             return True
     columns = zip(*i_card)
     for column in columns:
-        if all(column):
+        if all(x == -1 for x in column):
             return True
 
-    first_diagonal = []
-    second_diagonal = []
-    for index, row in enumerate(i_card):
-        first_diagonal.append(row[index])
-        second_diagonal.append(row[-(index + 1)])
-    if all(first_diagonal):
-        return True
-    if all(second_diagonal):
-        return True
+    # first_diagonal = []
+    # second_diagonal = []
+    # for index, row in enumerate(i_card):
+    #     first_diagonal.append(row[index])
+    #     second_diagonal.append(row[-(index + 1)])
+    # if all(x == -1 for x in first_diagonal):
+    #     return True
+    # if all(x == -1 for x in second_diagonal):
+    #     return True
 
     return False
 
+def bingo_new_number(card, number):
+    for i,row in enumerate(card):
+        for j,entry in enumerate(row):
+            if entry == number:
+                return(i,j)
+    return(-1,-1)
 
 def oxygen_rate(input_list):
     list(map(sum, zip(*input_list)))
@@ -198,9 +223,48 @@ def third_day():
     oxygen = list_of_bit_to_int(oxygen_rate(arr))
     carbon = list_of_bit_to_int(carbon_rate(arr))
     print(oxygen*carbon)
+
+def fourth_day():
+    numbers, cards = bingo_cards_from_text("src/day4input.txt")
+    complete = False
+    for number in numbers:
+        if not complete:
+            for no, card in enumerate(cards):
+                c_x, c_y = bingo_new_number(card, number)
+                if c_x != -1:
+                    card[c_x][c_y] = -1
+                if validate_card(card):
+                    winner = no
+                    final_number = number
+                    complete = True
+                    break
+
+    total = sum([entry for row in cards[winner] for entry in row if entry != -1])
+    print(total*final_number)
+
+    # part 2
+
+    numbers, cards = bingo_cards_from_text("src/day4input.txt")
+    for number in numbers:
+        new_cards = []
+        for no, card in enumerate(cards):
+            c_x, c_y = bingo_new_number(card, number)
+            if c_x != -1:
+                card[c_x][c_y] = -1
+            if not validate_card(card):
+                new_cards.append(card)
+        if (len(new_cards) == 0):
+            winning_card = cards[0]
+            final_number = number
+            break
+        cards = new_cards
+
+    total = sum([entry for row in winning_card for entry in row if entry != -1])
+    print(total * final_number)
 def main():
     print("oh oh oh!")
-    third_day()
+    #answer 782 was too low
+    fourth_day()
 
 
 if __name__ == "__main__":
